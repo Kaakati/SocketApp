@@ -65,8 +65,9 @@ io.on('connection', function(socket){
     
     // Find The Socket that is Disconnected
     var query = { 'socketId' : socket.id };
-    var toUpdate = {'socketId' : "", 'status' : 0};
     // Update the Socket with "" and set Status to 0
+    var toUpdate = {'socketId' : "", 'status' : 0};
+    
     Vendor.findOneAndUpdate(query, toUpdate, {upsert:false}, function(err, doc){
       if (err) {
         console.log(500, { error: err });
