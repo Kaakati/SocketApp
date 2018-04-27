@@ -92,10 +92,31 @@ const Schema = mongoose.Schema;
  
 const VendorModel = new Schema({
 //  author: ObjectId,
- name: String,
- status: Boolean,
- socketId: String,
- date: Date
+  name: String,
+  phone: String,
+  city: String,
+  country: String,
+  status: Boolean,
+  socketId: String,
+  date: Date
 });
 
 const Vendor = mongoose.model('VendorModel', VendorModel);
+
+// // Mongoose Schema
+// const Schema = mongoose.Schema;
+//     // ObjectId = Schema.ObjectId;
+ 
+// const BranchModel = new Schema({
+// //  author: ObjectId,
+//   vendorId: String,
+//   name: String,
+//   phone: String,
+//   city: String,
+//   country: String,
+//   status: Boolean,
+//   socketId: String,
+//   date: Date
+// });
+
+// const Branch = mongoose.model('BranchModel', BranchModel);
