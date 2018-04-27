@@ -1,0 +1,23 @@
+<html>
+    <head></head>
+    <body>
+        <h1>Socket.io</h1>
+        <p>This is a Paragraph</p>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.js"></script>
+
+        <script>
+            var socket = io();
+
+            socket.on('broadcastChannel', function(msg){
+                console.log(msg);
+            });
+
+            socket.emit('Status', {id: '5ae3347a01e1b015cc0f7a6d', status: 1});
+
+            socket.on('allVendors', function(msg){
+                // console.log("Server Response with" + " " + msg.name);
+                console.log("Server Response with" + " " + msg);
+            });
+         </script>
+    </body>
+</html>
