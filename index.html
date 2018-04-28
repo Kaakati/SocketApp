@@ -6,12 +6,36 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.js"></script>
 
         <script>
-            var socket = io();
+            var socket = io({
+                'query': 'token=' + 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtb2JpbGUiOiIrOTY2NTQ0Mjk5OTQyIiwicGFzc3dvcmQiOiIxMjM0NTYiLCJpYXQiOjE1MjQ5MTM0NjF9.zsVLtGGouEa7c9Yo4NQ_LlTmJFzHNJYNUBsp_dxhJ_E'
+            });
+            
+            var mySocketId = "000000";
+            
+            socket.on('getSocketId', function(msg){
+                console.log(msg);
+                mySocketId = msg;
+            });
 
-            socket.on('broadcastChannel', function(msg){
+            console.log(mySocketId);
+
+            socket.on(mySocketId, function(msg){
                 console.log(msg);
             });
 
+            socket.on('broadcastChannel', function(msg){
+                console.log('Broadcast Channel');
+                console.log(msg);
+            });
+
+            socket.on("unauthorized", function(error) {
+                if (error.data.type == "UnauthorizedError" || error.data.code == "invalid_token") {
+                    // redirect user to login page perhaps?
+                    console.log("User's token has expired");
+                }
+            });
+
+            socket.emit('verifyToken', {token: '0eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtb2JpbGUiOiIrOTY2NTQ0Mjk5OTQyIiwicGFzc3dvcmQiOiIxMjM0NTYiLCJpYXQiOjE1MjQ5MTM0NjF9.zsVLtGGouEa7c9Yo4NQ_LlTmJFzHNJYNUBsp_dxhJ_E'});
             socket.emit('Status', {id: '5ae426eb0690a856999bc0dc', status: 1});
             // socket.emit('Status', {id: '5ae421d0dea66a543e2485f4', status: 1});
             socket.on('allVendors', function(msg){
