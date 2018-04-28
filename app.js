@@ -1,30 +1,53 @@
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-const port = 8080
 const mongoose = require('mongoose');
+const port = 8080
 
 mongoose.connect('mongodb://admin4:951753@ds055945.mlab.com:55945/kaakatidb');
 
+// All Sockets
+var allClients = [];
+
+// Models
+var Vendor = require('./models/vendor');
+var Branch = require('./models/branch');
+var Order = require('./models/order');
+var OrderItems = require('./models/orderItems');
+// var User = require('./models/user');
+// var Driver = require('./models/driver');
+
+// Logic
 // Serve Files from Express for Endpoint
 app.get('/', function(req, res){
   res.sendFile(__dirname + '/index.html');
 });
 
+app.get('/1', function(req, res){
+  res.sendFile(__dirname + '/tonino.html');
+});
+
+app.get('/2', function(req, res){
+  res.sendFile(__dirname + '/snacku.html');
+});
+
 //Whenever someone connects this gets executed
 io.on('connection', function(socket){
   console.log('a user connected');
-  
+
+  allClients.push(socket);
+
   // Find One by ID and Update Status
   socket.on('Status', function(object) {
     console.log(socket.id)
     Vendor.findById(object.id, function (err, result) {
       console.log('Found One by id:');
       console.log(object.id + " " + result.name)
-      console.log(object.status)
+      console.log('is Online:' + ' ' + object.status)
 
       var query = { '_id' : object.id };
-      Vendor.findOneAndUpdate(query, {'socketId' : socket.id}, {upsert:true}, function(err, doc){
+      var toUpdate = {'socketId' : socket.id, 'status': 1};
+      Vendor.findOneAndUpdate(query, toUpdate, {upsert:false}, function(err, doc){
         if (err) return console.log(500, { error: err });
         return console.log("succesfully saved");
       });
@@ -58,26 +81,46 @@ io.on('connection', function(socket){
 
   });
 
+  console.log('Connected Users' + ' ' + allClients.length);
+
   //Whenever someone disconnects this piece of code is executed
   socket.on('disconnect', function () {
     console.log('===================');
-    console.log('A user disconnected');
+    console.log('A user disconnected' + ' ' + socket.id);
     
+    
+    var i = allClients.indexOf(socket);
+    allClients.splice(i, 1);
+    console.log(allClients.length);
+
     // Find The Socket that is Disconnected
     var query = { 'socketId' : socket.id };
     // Update the Socket with "" and set Status to 0
-    var toUpdate = {'socketId' : "", 'status' : 0};
+    var updateStatus = {'socketId' : "", 'status' : false};
+    // Find by Socket
     
-    Vendor.findOneAndUpdate(query, toUpdate, {upsert:false}, function(err, doc){
+    // Find Socket by ID and Update Status
+    Vendor.findOneAndUpdate(query, {'status' : 0}, {upsert:false}, function(err, vendor){
       if (err) {
         console.log(500, { error: err });
       } else {
-        console.log(doc.name)
-        console.log(doc.status)
+        // console.log('is Online:' + ' ' + vendor.status)
+        console.log('=============DISCONNECTED==============')
         // Print out the name of the disconnected
-        console.log("succesfully disconnected user" + " " + doc.name);
+        // console.log("succesfully disconnected user" + " " + vendor.id);
       }
     });
+
+    // Vendor.find(query, function(err, doc){
+    //   if (err) {
+    //     console.log(500, { error: err });
+    //   } else {
+    //     // console.log('=============DISCONNECTED==============')
+    //     // console.log('is Online:' + ' ' + doc.status)
+    //     // // Print out the name of the disconnected
+    //     // console.log("succesfully disconnected user" + " " + doc.id);
+    //   }
+    // });
  });
 });
 
@@ -86,37 +129,3 @@ http.listen(port, function(){
   console.log('listening on *:' + port);
 });
 
-// Mongoose Schema
-const Schema = mongoose.Schema;
-    // ObjectId = Schema.ObjectId;
- 
-const VendorModel = new Schema({
-//  author: ObjectId,
-  name: String,
-  phone: String,
-  city: String,
-  country: String,
-  status: Boolean,
-  socketId: String,
-  date: Date
-});
-
-const Vendor = mongoose.model('VendorModel', VendorModel);
-
-// // Mongoose Schema
-// const Schema = mongoose.Schema;
-//     // ObjectId = Schema.ObjectId;
- 
-// const BranchModel = new Schema({
-// //  author: ObjectId,
-//   vendorId: String,
-//   name: String,
-//   phone: String,
-//   city: String,
-//   country: String,
-//   status: Boolean,
-//   socketId: String,
-//   date: Date
-// });
-
-// const Branch = mongoose.model('BranchModel', BranchModel);

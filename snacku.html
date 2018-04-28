@@ -1,7 +1,7 @@
 <html>
     <head></head>
     <body>
-        <h1>Socket.io</h1>
+        <h1>Snack Universe</h1>
         <p>This is a Paragraph</p>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.js"></script>
 
@@ -12,7 +12,7 @@
                 console.log(msg);
             });
 
-            socket.emit('Status', {id: '5ae426eb0690a856999bc0dc', status: 1});
+            socket.emit('Status', {id: '5ae427040690a856999bc0dd', status: 1});
             // socket.emit('Status', {id: '5ae421d0dea66a543e2485f4', status: 1});
             socket.on('allVendors', function(msg){
                 // console.log("Server Response with" + " " + msg.name);
